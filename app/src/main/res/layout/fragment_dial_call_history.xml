@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        app:bb_tabXmlResource="@xml/call_history_navigation"
+        app:bb_showShadow="false"/>
+<!--
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/bottomBar"
+        android:background="@color/white"
+        android:layout_alignParentLeft="true" />
+-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_callhistory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/bottomBar"
+        android:background="@color/white"
+        android:layout_alignParentLeft="true"/>
+
+</RelativeLayout>

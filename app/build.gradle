@@ -1,0 +1,369 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-kapt'
+
+apply plugin: "org.jlleitschuh.gradle.ktlint"
+
+apply plugin: "kotlin-android-extensions"
+
+kotlin { experimental { coroutines 'enable' } }
+
+static def getPackageName() {
+    return "com.bdcom.appdialer"
+}
+
+static def firebaseEnabled() {
+    File googleFile = new File('app/google-services.json')
+    return googleFile.exists()
+}
+
+def crashlyticsEnabled() {
+    File googleFile = new File('app/google-services.json')
+    File linphoneLibrary = new File(LinphoneSdkBuildDir + '/libs/')
+    File linphoneLibraryDebug = new File(LinphoneSdkBuildDir + '/libs-debug/')
+    return googleFile.exists() && linphoneLibrary.exists() && linphoneLibraryDebug.exists()
+}
+
+if (crashlyticsEnabled()) {
+    apply plugin: 'com.google.firebase.crashlytics'
+}
+
+def gitBranch = new ByteArrayOutputStream()
+task getGitVersion() {
+    def gitVersion = "4.5.0"
+    def gitVersionStream = new ByteArrayOutputStream()
+    def gitCommitsCount = new ByteArrayOutputStream()
+    def gitCommitHash = new ByteArrayOutputStream()
+
+    try {
+        exec {
+            executable "git" args "describe", "--abbrev=0"
+            standardOutput = gitVersionStream
+        }
+        exec {
+            executable "git" args "rev-list", gitVersionStream.toString().trim() + "..HEAD", "--count"
+            standardOutput = gitCommitsCount
+        }
+        exec {
+            executable "git" args "rev-parse", "--short", "HEAD"
+            standardOutput = gitCommitHash
+        }
+        exec {
+            executable "git" args "name-rev", "--name-only", "HEAD"
+            standardOutput = gitBranch
+        }
+
+        if (gitCommitsCount.toString().toInteger() == 0) {
+            gitVersion = gitVersionStream.toString().trim()
+        } else {
+            gitVersion = gitVersionStream.toString().trim() + "." + gitCommitsCount.toString().trim() + "+" + gitCommitHash.toString().trim()
+        }
+        println("Git version: " + gitVersion)
+    } catch (ignored) {
+        println("Git not found")
+    }
+    project.version = gitVersion
+}
+
+configurations {
+    customImplementation.extendsFrom implementation
+}
+
+task linphoneSdkSource() {
+    doLast {
+        configurations.customImplementation.getIncoming().each {
+            it.getResolutionResult().allComponents.each {
+                if (it.id.getDisplayName().contains("linphone-sdk-android")) {
+                    println 'Linphone SDK used is ' + it.moduleVersion.version + ' from ' + it.properties["repositoryName"]
+                }
+            }
+        }
+    }
+}
+
+project.tasks['preBuild'].dependsOn 'getGitVersion'
+project.tasks['preBuild'].dependsOn 'linphoneSdkSource'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 30
+        versionCode 4491
+        versionName "${project.version}"
+        applicationId getPackageName()
+    }
+
+    // Required to be able to generate app bundle with native libraries symbols, see releaseAppBundle below
+    def ndkHome = System.getenv('ANDROID_NDK_HOME')
+    if (ndkHome == null || !new File(ndkHome + "/source.properties").exists()) {
+        ndkVersion "21.3.6528147"
+    } else {
+        ndkPath ndkHome
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "linphone-android-${variant.buildType.name}-${project.version}.apk"
+        }
+
+        // See https://developer.android.com/studio/releases/gradle-plugin#3-6-0-behavior for why extractNativeLibs is set to true in debug flavor
+        if (variant.buildType.name == "release" || variant.buildType.name == "releaseAppBundle") {
+            variant.getMergedFlavor().manifestPlaceholders = [linphone_address_mime_type: "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address",
+                                                            linphone_file_provider: getPackageName() + ".fileprovider",
+                                                            appLabel: "@string/app_name",
+                                                            extractNativeLibs: "false"]
+        }
+        else {
+            variant.getMergedFlavor().manifestPlaceholders = [linphone_address_mime_type: "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address",
+                                                            linphone_file_provider: getPackageName() + ".debug.fileprovider",
+                                                            appLabel: "@string/app_name_debug",
+                                                            extractNativeLibs: "true"]
+        }
+    }
+
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def keystoreProperties = new Properties()
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+    signingConfigs {
+        release {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            resValue "string", "linphone_app_branch", gitBranch.toString().trim()
+            resValue "string", "sync_account_type", getPackageName() + ".sync"
+            resValue "string", "file_provider", getPackageName() + ".fileprovider"
+            resValue "string", "linphone_address_mime_type", "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address"
+
+            if (!firebaseEnabled()) {
+                resValue "string", "gcm_defaultSenderId", "none"
+            }
+
+            resValue "bool", "crashlytics_enabled", "false"
+        }
+
+        releaseAppBundle {
+            initWith release
+            ndk.debugSymbolLevel = 'FULL'
+
+            if (crashlyticsEnabled()) {
+                resValue "bool", "crashlytics_enabled", "true"
+
+                firebaseCrashlytics {
+                    nativeSymbolUploadEnabled true
+                    strippedNativeLibsDir file(LinphoneSdkBuildDir + '/libs/').toString()
+                    unstrippedNativeLibsDir file(LinphoneSdkBuildDir + '/libs-debug/').toString()
+                }
+            } else {
+                resValue "bool", "crashlytics_enabled", "false"
+            }
+        }
+
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+            jniDebuggable true
+
+            resValue "string", "linphone_app_branch", gitBranch.toString().trim()
+            resValue "string", "sync_account_type", getPackageName() + ".sync"
+            resValue "string", "file_provider", getPackageName() + ".debug.fileprovider"
+            resValue "string", "linphone_address_mime_type", "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address"
+
+            if (!firebaseEnabled()) {
+                resValue "string", "gcm_defaultSenderId", "none"
+            }
+
+            if (crashlyticsEnabled()) {
+                resValue "bool", "crashlytics_enabled", "true"
+
+                firebaseCrashlytics {
+                    nativeSymbolUploadEnabled true
+                    strippedNativeLibsDir file(LinphoneSdkBuildDir + '/libs/').toString()
+                    unstrippedNativeLibsDir file(LinphoneSdkBuildDir + '/libs-debug/').toString()
+                }
+            } else {
+                resValue "bool", "crashlytics_enabled", "false"
+            }
+        }
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+repositories {
+
+//    maven {
+//        name "local linphone-sdk maven repository"
+//        url file(LinphoneSdkBuildDir + '/maven_repository/')
+//        content {
+//            includeGroup "org.linphone"
+//        }
+//    }
+//
+//    maven {
+//        name "linphone.org maven repository"
+//        url "https://linphone.org/maven_repository"
+//        content {
+//            includeGroup "org.linphone"
+//        }
+//    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.media:media:1.2.0'
+    // Don't update to fragment-ktx:1.3.2 (nor 1.3.3) for now, will break some animations
+    // https://developer.android.com/jetpack/androidx/releases/fragment#version_132_2
+    implementation 'androidx.fragment:fragment-ktx:1.3.1'
+    implementation 'androidx.core:core-ktx:1.5.0-beta03'
+
+    def nav_version = "2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
+
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.android:flexbox:2.0.0'
+
+    implementation 'androidx.emoji:emoji:1.1.0'
+    implementation 'androidx.emoji:emoji-bundled:1.1.0'
+
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    kapt 'com.github.bumptech.glide:compiler:4.12.0'
+
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+    implementation platform('com.google.firebase:firebase-bom:26.4.0')
+    if (crashlyticsEnabled()) {
+        implementation 'com.google.firebase:firebase-crashlytics-ndk'
+    } else {
+        compileOnly 'com.google.firebase:firebase-crashlytics-ndk'
+    }
+    if (firebaseEnabled()) {
+        implementation 'com.google.firebase:firebase-messaging'
+    }
+
+    //implementation 'org.linphone:linphone-sdk-android:5.0+'
+
+    // New imported LinPhone SDK DEBUG
+    //implementation project(':linphone-sdk-android-debug-5.0.0-alpha.16+22f8d3e')
+
+    // New imported LinPhone SDK RELEASE
+//    implementation project(':linphone-sdk-android-5.0.0-alpha.16+22f8d3e')
+
+    implementation project(':frag-nav')
+
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.1.0'
+
+    implementation 'com.jakewharton:butterknife:10.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.1.6'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
+    implementation 'com.roughike:bottom-bar:2.3.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.27.0-eap13'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    implementation 'com.patrickpissurno:ripple-effect:1.3.1'
+    testImplementation 'junit:junit:4.12'
+    //implementation project(':ssl-payment-sdk-v4')
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.maps:google-maps-services:0.1.20'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation "com.google.android.gms:play-services-auth-api-phone:16.0.0"
+    implementation 'com.github.stfalcon:smsverifycatcher:0.3.2'
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+    implementation "me.leolin:ShortcutBadger:1.1.22@aar"   // library for batch count
+    implementation 'com.gjiazhe:wavesidebar:1.3'
+
+    def lifecycle_version = "2.3.0"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    // Helpers for implementing LifecycleOwner in a Service
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
+    // ProcessLifecycleOwner provides a lifecycle for the whole application process
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycle_version"
+
+    //Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_core"
+
+    //implementation project(':ssl-payment-sdk-v4')
+
+    // Only enable leak canary prior to release
+    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
+}
+
+if (firebaseEnabled()) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
+task generateContactsXml(type: Copy) {
+    from 'contacts.xml'
+    into "src/main/res/xml/"
+    outputs.upToDateWhen { file('src/main/res/xml/contacts.xml').exists() }
+    filter {
+        line -> line
+                .replaceAll('%%AUTO_GENERATED%%', 'This file has been automatically generated, do not edit or commit !')
+                .replaceAll('%%PACKAGE_NAME%%', getPackageName())
+
+    }
+}
+project.tasks['preBuild'].dependsOn 'generateContactsXml'
+
+ktlint {
+    android = true
+    ignoreFailures = true
+}
+
+project.tasks['preBuild'].dependsOn 'ktlintFormat'
+
+if (crashlyticsEnabled()) {
+    afterEvaluate {
+        assembleDebug.finalizedBy(uploadCrashlyticsSymbolFileDebug)
+        packageDebugBundle.finalizedBy(uploadCrashlyticsSymbolFileDebug)
+
+        assembleReleaseAppBundle.finalizedBy(uploadCrashlyticsSymbolFileReleaseAppBundle)
+        packageReleaseAppBundleBundle.finalizedBy(uploadCrashlyticsSymbolFileReleaseAppBundle)
+    }
+}

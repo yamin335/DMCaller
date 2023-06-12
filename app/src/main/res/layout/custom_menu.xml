@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/ivStatus"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_connection_found" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        tools:ignore="RtlHardcoded"
+        tools:text="@string/connection_on" />
+
+</LinearLayout>

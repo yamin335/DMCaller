@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@drawable/ic_contact_select"
+        id="@+id/menu_contacts"
+        title="Contacts"
+        />
+    <tab
+        icon="@drawable/ic_dial_select"
+        id="@+id/menu_dialer"
+        title="Dialer"
+        />
+    <tab
+        icon="@drawable/ic_call_history"
+        id="@+id/menu_call_history"
+        title="Call history"
+        />
+    <!--<tab-->
+        <!--icon="@drawable/ic_conf_select"-->
+        <!--id="@+id/menu_conf"-->
+        <!--title="Conference"-->
+        <!--/>-->
+    <tab
+        icon="@drawable/ic_settings_select"
+        id="@+id/menu_settings"
+        title="Settings"
+        />
+</tabs>

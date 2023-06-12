@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="title"
+            type="String" />
+        <variable
+            name="subtitle"
+            type="String" />
+        <variable
+            name="checked"
+            type="Boolean" />
+        <variable
+            name="enabled"
+            type="Boolean" />
+        <variable
+            name="listener"
+            type="com.bdcom.appdialer.activities.main.settings.SettingListener" />
+    </data>
+
+    <RelativeLayout
+        android:enabled="@{enabled ?? true}"
+        onClickToggleSwitch="@{@id/setting_switch}"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/setting_switch"
+            android:enabled="@{enabled ?? true}"
+            android:checked="@={checked}"
+            android:onCheckedChanged="@{(switch, value) -> listener.onBoolValueChanged(value)}"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.bdcom.appdialer.views.MarqueeTextView
+            android:id="@+id/settings_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{title}"
+            android:enabled="@{enabled ?? true}"
+            android:visibility="@{title.length() > 0 ? View.VISIBLE : View.GONE}"
+            android:singleLine="true"
+            android:layout_toLeftOf="@id/setting_switch"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            style="@style/settings_item_font"/>
+
+        <com.bdcom.appdialer.views.MarqueeTextView
+            android:id="@+id/settings_subtitle"
+            android:text="@{subtitle}"
+            android:enabled="@{enabled ?? true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{subtitle.length() > 0 ? View.VISIBLE : View.GONE}"
+            android:singleLine="true"
+            android:layout_below="@id/settings_title"
+            android:layout_toLeftOf="@id/setting_switch"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            style="@style/settings_item_subtitle_font"/>
+
+        <View
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/settings_subtitle"
+            android:background="?attr/dividerColor" />
+
+    </RelativeLayout>
+
+</layout>

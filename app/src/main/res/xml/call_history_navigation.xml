@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@drawable/ic_contact_select"
+        id="@+id/all_call"
+        title="All"
+        activeColor="#D3D3D3"/>
+    <tab
+        icon="@drawable/incoming_select"
+        id="@+id/incoming_call"
+        title="Incoming"
+        activeColor="#34af34"/>
+    <tab
+        icon="@drawable/outgoing_select"
+        id="@+id/outgoing_call"
+        title="Outgoing"
+        activeColor="#3391fe"/>
+    <tab
+        icon="@drawable/missed_select"
+        id="@+id/missed_call"
+        title="Missed"
+        activeColor="#ec1b33"/>
+</tabs>

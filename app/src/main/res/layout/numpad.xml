@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="keyListener"
+            type="com.bdcom.appdialer.activities.main.dialer.NumpadDigitListener" />
+    </data>
+
+<!--    <com.google.android.flexbox.FlexboxLayout-->
+<!--        android:id="@+id/numpad"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:padding="10dp"-->
+<!--        android:background="?attr/backgroundColor"-->
+<!--        app:flexWrap="wrap"-->
+<!--        app:justifyContent="space_around"-->
+<!--        app:alignItems="center"-->
+<!--        app:alignContent="space_around">-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_one"-->
+<!--            android:contentDescription="@string/content_description_numpad_1"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('1')}"-->
+<!--            android:onLongClick="@{() -> keyListener.handleLongClick('1')}"  />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:contentDescription="@string/content_description_numpad_2"-->
+<!--            android:src="@drawable/numpad_two"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('2')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:contentDescription="@string/content_description_numpad_3"-->
+<!--            android:src="@drawable/numpad_three"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('3')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            app:layout_wrapBefore="true"-->
+<!--            android:src="@drawable/numpad_four"-->
+<!--            android:contentDescription="@string/content_description_numpad_4"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('4')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_five"-->
+<!--            android:contentDescription="@string/content_description_numpad_5"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('5')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_six"-->
+<!--            android:contentDescription="@string/content_description_numpad_6"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('6')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            app:layout_wrapBefore="true"-->
+<!--            android:src="@drawable/numpad_seven"-->
+<!--            android:contentDescription="@string/content_description_numpad_7"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('7')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_eight"-->
+<!--            android:contentDescription="@string/content_description_numpad_8"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('8')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_nine"-->
+<!--            android:contentDescription="@string/content_description_numpad_9"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('9')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            app:layout_wrapBefore="true"-->
+<!--            android:src="@drawable/numpad_star_digit"-->
+<!--            android:contentDescription="@string/content_description_numpad_star"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('*')}" />-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_zero"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('0')}"-->
+<!--            android:contentDescription="@string/content_description_numpad_0"-->
+<!--            android:onLongClick="@{() -> keyListener.handleLongClick('+')}"/>-->
+
+<!--        <ImageView-->
+<!--            style="@style/numpad_digit"-->
+<!--            android:src="@drawable/numpad_sharp"-->
+<!--            android:contentDescription="@string/content_description_numpad_sharp"-->
+<!--            android:onClick="@{() -> keyListener.handleClick('#')}" />-->
+
+<!--    </com.google.android.flexbox.FlexboxLayout>-->
+
+    <LinearLayout
+        android:id="@+id/numpad"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="32dp"
+        android:background="@drawable/white_solid_bg"
+        android:orientation="vertical"
+        android:weightSum="4"
+        tools:ignore="NestedWeights">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnOne"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:text="@string/dialpad_one"
+                android:textColor="#000000"
+                android:textSize="30sp"
+                android:onClick="@{() -> keyListener.handleClick('1')}"
+                android:onLongClick="@{() -> keyListener.handleLongClick('1')}"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnTwo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('2')}"
+                android:text="@string/dialpad_two"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnThree"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('3')}"
+                android:text="@string/dialpad_three"
+                android:textSize="30sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnFour"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('4')}"
+                android:text="@string/dialpad_four"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnFive"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('5')}"
+                android:text="@string/dialpad_five"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnSix"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('6')}"
+                android:text="@string/dialpad_six"
+                android:textSize="30sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnSeven"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('7')}"
+                android:text="@string/dialpad_seven"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnEight"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('8')}"
+                android:text="@string/dialpad_eight"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnNine"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('9')}"
+                android:text="@string/dialpad_nine"
+                android:textSize="30sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnAterisk"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('*')}"
+                android:onLongClick="@{() -> keyListener.handleLongClick('+')}"
+                android:text="@string/dialpad_plus"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnZero"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:onClick="@{() -> keyListener.handleClick('0')}"
+                android:text="@string/dialpad_zero"
+                android:textSize="30sp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnHash"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:text="@string/dialpad_hash"
+                android:textSize="30sp"
+                android:onClick="@{() -> keyListener.handleClick('#')}" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

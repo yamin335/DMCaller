@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "472944440109",
+    "project_id": "cloud-apps-dialer",
+    "storage_bucket": "cloud-apps-dialer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472944440109:android:57ed17ccd5e8f1d3f2d9a4",
+        "android_client_info": {
+          "package_name": "com.bdcom.appdialer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472944440109-6sgrgnsrc5o80lbuj6vg54frupkeoaju.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8FGd17jaoGkjKD8YwhvTZxCkFGjfBBIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "472944440109-6sgrgnsrc5o80lbuj6vg54frupkeoaju.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472944440109:android:57ed17ccd5e8f1d3f2d9a4",
+        "android_client_info": {
+          "package_name": "com.bdcom.appdialer.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472944440109-6sgrgnsrc5o80lbuj6vg54frupkeoaju.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8FGd17jaoGkjKD8YwhvTZxCkFGjfBBIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "472944440109-6sgrgnsrc5o80lbuj6vg54frupkeoaju.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

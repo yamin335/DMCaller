@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="android.text.InputType"/>
+        <variable
+            name="title"
+            type="String" />
+        <variable
+            name="subtitle"
+            type="String" />
+        <variable
+            name="defaultValue"
+            type="String" />
+        <variable
+            name="inputType"
+            type="Integer" />
+        <variable
+            name="enabled"
+            type="Boolean" />
+        <variable
+            name="listener"
+            type="com.bdcom.appdialer.activities.main.settings.SettingListener" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/settings_clear_input"
+            android:onClick="@{() -> settingsInput.setText(defaultValue)}"
+            android:visibility="invisible"
+            android:contentDescription="@string/content_description_clear_field"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/field_clean"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/settings_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/settings_clear_input"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:enabled="@{enabled ?? true}"
+            android:hint="@{title}"
+            app:helperText="@{subtitle}"
+            app:helperTextEnabled="@{subtitle.length() > 0}">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/settings_input"
+                onValueChanged="@{() -> listener.onTextValueChanged(settingsInput.getText().toString())}"
+                onFocusChangeVisibilityOf="@{settingsClearInput}"
+                android:text="@{defaultValue}"
+                android:imeOptions="actionDone"
+                android:inputType="@{inputType ?? InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS}"
+                android:singleLine="true"
+                android:background="@color/transparent_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/settings_input_layout"
+            android:background="?attr/dividerColor" />
+
+    </RelativeLayout>
+
+</layout>
